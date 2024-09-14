@@ -1,0 +1,142 @@
+dataset: # Required.
+  type: cityscapes_semi
+  train:
+    data_root: /raid/djh/Semi-supervised-segmentation/U2PL-main/data/cityscapes
+    data_list: /raid/djh/Semi-supervised-segmentation/U2PL-main/data/splits/cityscapes/372/labeled.txt
+    flip: True
+    GaussianBlur: False
+    rand_resize: [0.5, 2.0]
+    #rand_rotation: [-10.0, 10.0]
+    crop:
+      type: rand
+      size: [769, 769] # crop image with HxW size
+  val:
+    data_root: /raid/djh/Semi-supervised-segmentation/U2PL-main/data/cityscapes
+    data_list: /raid/djh/Semi-supervised-segmentation/U2PL-main/data/splits/cityscapes/val.txt
+    crop:
+      type: center
+      size: [769, 769] # crop image with HxW size
+  batch_size: 2
+  n_sup: 372
+  noise_std: 0.1
+  workers: 4
+  mean: [123.675, 116.28, 103.53]
+  std: [58.395, 57.12, 57.375]
+  ignore_label: 255
+
+trainer: # Required.
+  epochs: 200
+  eval_on: True
+  sup_only_epoch: 1
+  optimizer:
+    type: SGD
+    kwargs:
+      lr: 0.005
+      momentum: 0.9
+      weight_decay: 0.0005
+  lr_scheduler:
+    mode: poly
+    kwargs:
+      power: 0.9
+  unsupervised:
+    TTA: False
+    drop_percent: 80
+    apply_aug: cutmix
+
+  contrastive:
+    negative_high_entropy: True
+    low_rank: 3
+    high_rank: 20
+    current_class_threshold: 0.3
+    current_class_negative_threshold: 1
+    unsupervised_entropy_ignore: 80
+    low_entropy_threshold: 20
+    num_negatives: 50
+    num_queries: 256
+    temperature: 0.5
+    delay: 1000
+
+
+  prototype:
+    sample_delay: 3
+    sample_last: 3
+    sample_pixel_num: 5000
+
+    threshold_type: fix
+
+    high_threshold: 0.8
+
+    init_prob: 0.8
+    #    thre_max: 0.8
+    #    thre_min: 0.75
+    thre_update: 0.999
+    #    fix_class: [0,1,4,5,11,12,18]
+
+    class_balance_sample: False
+    gamma: 0.5
+
+    high_prototype_num: 2
+    low_prototype_num: 2
+
+    proto_add: True
+    intra_var_eval: cos_sim  
+    add_num: 1
+    add_proportion: 0.05  
+
+    queue_len: 30000  
+    type: cluster  
+    cosine_tao: 0.1  # 0.5
+    sup_sample: grid  
+    grid_num: 32
+
+    unsup_sample: random  
+    unsup_sample_num: 1000  
+    pseudo_threshold: 0.8
+    #    loss_weight: 0.1
+    
+    contrastive: False
+    
+    prototype_ema_decay: 0.99
+    fault_weight: 1.  
+
+saver:
+#  auto_resume: True
+  snapshot_dir: checkpoints
+  pretrain: ''
+
+criterion:
+  type: CELoss
+  kwargs:
+    use_weight: False
+#  type: ohem
+#  kwargs:
+#    thresh: 0.7
+#    min_kept: 100000
+  weight: 0.5
+
+criterion_2:
+  type: ohem
+  kwargs:
+    thresh: 0.7
+    min_kept: 100000
+  weight: 0.5
+
+net: # Required.
+  num_classes: 19
+  sync_bn: True
+  ema_decay: 0.99
+#  aux_loss:
+#    aux_plane: 1024
+#    loss_weight: 0.4
+  encoder:
+    type: u2pl.models.resnet.resnet101
+    kwargs:
+      multi_grid: True
+      zero_init_residual: True
+      fpn: True
+      replace_stride_with_dilation: [False, True, True]  #layer0...1 is fixed, layer2...4
+  decoder:
+    type: u2pl.models.decoder.dec_deeplabv3_plus
+    kwargs:
+      inner_planes: 256
+      dilations: [12, 24, 36]
