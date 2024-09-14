@@ -3,7 +3,7 @@ Official PyTorch implementation of  [Boundary-Refined Prototype Generation: A Ge
 
 > **Abstract.** Semi-supervised semantic segmentation has attracted increasing attention in computer vision, aiming to leverage unlabeled data through latent supervision. To achieve this goal, prototype-based classification has been introduced and achieved lots of success. However, the current approaches isolate prototype generation from the main training framework, presenting a non-end-to-end workflow. Furthermore, most methods directly perform the K-Means clustering on features to generate prototypes, resulting in their proximity to category semantic centers, while overlooking the clear delineation of class boundaries. To address the above problems, we propose a novel end-to-end boundary-refined prototype generation (BRPG) method. Specifically, we perform online clustering on sampled features to incorporate the prototype generation into the whole training framework. In addition, to enhance the classification boundaries, we sample and cluster high- and low-confidence features separately based on confidence estimation, facilitating the generation of prototypes closer to the class boundaries. Moreover, an adaptive prototype optimization strategy is proposed to increase the number of prototypes for categories with scattered feature distributions, which further refines the class boundaries. Extensive experiments demonstrate the remarkable robustness and scalability of our method across diverse datasets, segmentation networks, and semi-supervised frameworks, outperforming the state-of-the-art approaches on three benchmark datasets: PASCAL VOC 2012, Cityscapes and MS COCO. 
 
-<img src="img/pipeline.png" alt="fig-method-new" style="zoom: 40%;" />
+<img src="img/pipeline.png" alt="fig-method-new" style="zoom: 25%;" />
 
 ## News
 
@@ -13,7 +13,7 @@ Official PyTorch implementation of  [Boundary-Refined Prototype Generation: A Ge
 
 ## Results
 
-#### PASCAL VOC 2012
+### PASCAL VOC 2012
 
 * ***classic setting***
 
@@ -29,14 +29,14 @@ Official PyTorch implementation of  [Boundary-Refined Prototype Generation: A Ge
 | SupOnly | 67.87      | 71.55      | 75.80      | 77.13      |
 | BRPG    | 79.40      | 81.61      | 81.83      | 80.78      |
 
-#### Cityscapes
+### Cityscapes
 
 | Method  | 1/16 (186) | 1/8 (372) | 1/4 (744) | 1/2 (1488) |
 | ------- | ---------- | --------- | --------- | ---------- |
 | SupOnly | 65.74      | 72.53     | 74.43     | 77.83      |
 | BRPG    | 76.37      | 78.56     | 79.46     | 80.26      |
 
-#### MS COCO
+### MS COCO
 
 | Method  | 1/128  (925) | 1/64 (1849) | 1/32 (3697) | 1/16 (7393) |
 | ------- | ------------ | ----------- | ----------- | ----------- |
@@ -102,7 +102,7 @@ pretrained
 
 ## Usage
 
-#### Train
+### Train
 
 ```
 cd experiments/pascal/366/ours/resnet101
@@ -110,7 +110,7 @@ cd experiments/pascal/366/ours/resnet101
 sh train.sh <num_gpu> <port>
 ```
 
-#### Test
+### Test
 
 ```
 cd experiments/pascal/366/ours/resnet101
